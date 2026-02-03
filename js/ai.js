@@ -1,5 +1,5 @@
 /* --- CONFIGURATION & STATE --- */
-const WP_API_ENDPOINT = "/wp-json/fesaone/v1/c";
+const WP_API_ENDPOINT = context.env.API_KEY;
 const SAFETY_MODEL = "meta-llama/llama-guard-4-12b"; 
 const CHAT_MODEL = "llama-3.3-70b-versatile"; 
 
@@ -357,3 +357,4 @@ if (SpeechRecognition) {
 } else {
     if(voiceBtn) voiceBtn.style.display = 'none';
 }
+
