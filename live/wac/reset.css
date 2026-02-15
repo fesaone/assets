@@ -1,0 +1,26 @@
+.top img {
+    padding: 8px;
+}
+.top .logo {
+    background-color: var(--color-amber-400);
+}        
+:root {
+    --linear-gradient: linear-gradient(71deg, color-mix(in oklab, var(--color-amber-400) 50%, transparent) 25%, transparent 26%, transparent 74%, color-mix(in oklab, var(--color-amber-400) 50%, transparent) 75%);
+}
+footer .title::before {
+    background: -webkit-linear-gradient(180deg, var(--color-amber-400), var(--color-amber-300), var(--color-amber-400));
+}
+footer .game,
+footer .title {
+    background-color: color-mix(in oklab, var(--color-amber-500) 95%, transparent);
+}
+footer .game .logoEvent {
+    background-color: var(--color-amber-500);
+    background-color: color-mix(in oklab, var(--color-amber-500) 50%, transparent);
+}
+footer.dua > div {
+    background-color: color-mix(in oklab, var(--color-amber-500) 95%, transparent);
+}
+footer .game .skorGame {
+    background: -webkit-linear-gradient(-90deg, var(--color-amber-500), var(--color-amber-300));
+}

@@ -1,0 +1,71 @@
+<html lang="id"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WAC TOP</title>
+    <link rel="stylesheet" href="https://assets.fesa.one/css/global.css">
+    <link rel="stylesheet" href="https://assets.fesa.one/font/laliga/font.css">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../reset.css">
+</head>
+<body>
+    <section class="top" style="display: none !important;">
+        <!-- EVENT LOGO -->
+        <img class="logo" id="NONE" src="https://app.rmedia.id/fallback">
+        <div class="timer">LIVE</div>
+        <div class="timer add" id="additionalTime" style="display: none;"></div>
+        <!-- HOME -->
+        <div class="name autowidth" id="home_short_name">HOME</div>
+        <img id="NONE" src="https://app.rmedia.id/fallback">
+        <div class="score stat-gol_home" id="score_home">0</div>
+        <!-- AWAY -->
+        <div class="score tandang stat-gol_away" id="score_away">0</div>
+        <img id="NONE" src="https://app.rmedia.id/fallback" alt="">
+        <div class="name autowidth" id="away_short_name">AWAY</div>
+    </section>
+
+
+<!-- STATUS -->
+<div id="status" style="display: none !important;">Menunggu data...</div>
+
+
+    <footer>
+      <img id="home_logo" src="https://app.rmedia.id/fallback">
+      <section class="data">
+        <div class="title">
+            <!-- EVENT DATA -->
+          <div class="event-data" style="display: flex; z-index: 99; gap: 10px;">
+            <div id="event_name">EVENT</div>
+            <div id="match_id" style="display: none;">-</div>
+            <div id="group_stage">-</div>
+            <span style="display: flex;">(KU-<div id="age_group">-</div>)</span>
+          </div>
+          <div class="inset"></div>
+        </div>
+        <div class="game">
+          <!-- HOME -->
+          <div class="nameTeam" id="home_club_name" autofit>HOME</div>
+          <div class="skorGame home stat-gol_home" id="disp-score-home">0</div>
+          <!-- EVENT LOGO -->
+          <img class="logoEvent" id="event_logo" src="https://app.rmedia.id/fallback" alt="LOGO-EVENT">
+          <!-- AWAY -->
+          <div class="skorGame away stat-gol_away" id="disp-score-away">0</div>
+          <div class="nameTeam" id="away_club_name" autofit>AWAY</div>
+        </div>
+      </section>
+      <img id="away_logo" src="https://app.rmedia.id/fallback">
+    </footer>
+    <footer class="dua">
+        <div id="timer">LIVE</div>
+    </footer>
+
+    <script src="https://assets.fesa.one/js/autofit.js"></script>
+    <script src="https://assets.fesa.one/js/autowidth.js"></script>
+
+    <script type="module" src="/js/match-display.js"></script>
+    <script src="/js/stats-display.js"></script>
+    <script src="/js/toggleDisplay.js"></script>
+    
+    <script type="module" src="/js/timer-display.js"></script>
+    <!-- <script type="module" src="/js/penalty-display.js"></script> -->
+</body>
+</html>

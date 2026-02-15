@@ -1,0 +1,18 @@
+<!-- STATUS -->
+<div id="status">Menunggu data...</div>
+<!-- HOME -->
+<img id="home_logo" class="logo" src="" alt="">
+<div id="home_club_name">-</div>
+<div id="home_short_name" class="short_name">-</div>
+<span id="score_home" class="score-val">0</span>
+<!-- AWAY -->
+<img id="away_logo" class="logo" src="" alt="">
+<div id="away_club_name">-</div>
+<div id="away_short_name" class="short_name">-</div>
+<span id="score_away" class="score-val">0</span>
+<!-- EVENT -->
+<img id="event_logo" src="" alt="">
+<div id="event_name">-</div>
+<div id="match_id">-</div>
+<div id="group_stage">-</div>
+<div id="age_group">-</div>

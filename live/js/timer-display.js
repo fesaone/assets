@@ -1,0 +1,111 @@
+// --- FILE: timer-display.js
+const DB_NAME = 'MatchTimerDB';
+const STORE_NAME = 'timer_data';
+const CHANNEL_NAME = 'timer_sync_channel';
+let db;
+const channel = new BroadcastChannel(CHANNEL_NAME);
+
+const timerDisplay = document.getElementById('timer');
+const additionalTimeDisplay = document.getElementById('additionalTime');
+
+let currentTimeMs = 0; 
+let halfLimit = 0;     
+let currentState = 'IDLE';
+
+function openDB() {
+    const request = indexedDB.open(DB_NAME, 1);
+    request.onupgradeneeded = (event) => {
+        db = event.target.result;
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+            db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+        }
+    };
+    request.onsuccess = (event) => {
+        db = event.target.result;
+        loadState();
+    };
+    request.onerror = (event) => {
+        console.error("Gagal membuka database:", event.target.errorCode);
+    };
+}
+
+function loadState() {
+    if (!db) return;
+    const transaction = db.transaction([STORE_NAME], 'readonly');
+    const store = transaction.objectStore(STORE_NAME);
+    const request = store.get('current_match');
+
+    request.onsuccess = () => {
+        if (request.result) {
+            const data = request.result;
+            currentTimeMs = data.currentTimeMs;
+            halfLimit = data.halfLimit;
+            currentState = data.state;
+            updateUI();
+        }
+    };
+}
+
+channel.onmessage = (event) => {
+    if (event.data.type === 'UPDATE') {
+        loadState();
+    }
+};
+
+function formatTime(ms) {
+    const totalSeconds = Math.floor(ms / 1000);
+    const m = Math.floor(totalSeconds / 60);
+    const s = totalSeconds % 60;
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+function updateUI() {
+    const STATE = { IDLE: 'IDLE', H1: 'H1', HT: 'HT', H2: 'H2', FT: 'FT', ET1: 'ET1', ET2: 'ET2' };
+
+    // --- LOGIC UNTUK MENAMBHKAN CLASS PADA BODY ---
+    
+    // 1. Hapus semua class status terlebih dahulu agar bersih
+    document.body.classList.remove('dimulai', 'ht', 'ft');
+
+    // 2. Tentukan class berdasarkan currentState
+    if (currentState === STATE.HT) {
+        // Kondisi: Waktu HT
+        document.body.classList.add('ht');
+    } else if (currentState === STATE.FT) {
+        // Kondisi: Waktu FT
+        document.body.classList.add('ft');
+    } else if (currentState === STATE.H1 || currentState === STATE.H2 || currentState === STATE.ET1 || currentState === STATE.ET2) {
+        // Kondisi: Waktu berjalan (H1, H2, atau Extra Time)
+        document.body.classList.add('dimulai');
+    }
+    // Jika IDLE, body tidak akan punya class status (sudah di-remove di awal)
+
+    // ----------------------------------------------
+
+    if (currentState === STATE.IDLE) {
+        // Menampilkan LIVE saat status IDLE (Reset)
+        timerDisplay.textContent = "LIVE";
+        additionalTimeDisplay.textContent = "";
+    } 
+    else if (currentState === STATE.HT) {
+        timerDisplay.textContent = "HT";
+        additionalTimeDisplay.textContent = "";
+    } 
+    else if (currentState === STATE.FT) {
+        timerDisplay.textContent = "FT";
+        additionalTimeDisplay.textContent = "";
+    } 
+    else {
+        timerDisplay.textContent = formatTime(currentTimeMs);
+        const currentMinutes = Math.floor(currentTimeMs / 60000);
+        
+        if (currentMinutes > halfLimit) {
+            const injuryTime = currentMinutes - halfLimit;
+            additionalTimeDisplay.textContent = `${injuryTime}+`;
+        } else {
+            additionalTimeDisplay.textContent = "";
+        }
+    }
+}
+
+openDB();

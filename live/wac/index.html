@@ -1,0 +1,88 @@
+<html lang="id"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WAC</title>
+    <style>
+        * {
+            position: relative;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: all 0.3s ease-in-out;
+        }
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-image: url(https://gelora-public-storage.s3-ap-southeast-1.amazonaws.com/upload/public-20230214134056.jpg);
+        }
+        iframe {
+            width: 100vw;
+            height: 50vh;
+            background-color: transparent;
+        }
+        #penalty {
+            position: absolute;
+            top: 0;
+            opacity: 0;
+        }
+        body.penalty {
+            #penalty {
+                opacity: 1;
+            }
+            #top {
+                opacity: 0;
+            }
+        }
+
+        #bottom {
+            opacity: 0;
+        }
+        body.scoreboard-bottom #bottom {
+            opacity: 1;
+        }
+        body.scoreboard-bottom #top {
+            opacity: 0;
+        }
+
+        .tv {
+            min-width: 68px;
+            width: 136px;
+            max-width: 150px;
+            min-height: 68px;
+            max-height: 86px;
+            display: flex;
+            align-items: top;
+            justify-content: end;
+            position: fixed;
+            top: 54px;
+            right: 96px;
+        }
+        .tv img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            object-position: right top;
+        }
+        #transisi {
+            background-color: transparent;
+            position: absolute;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <div class="tv">
+        <img src="https://app.rmedia.id/wp-content/uploads/2026/02/ATP.png">
+    </div>
+    <iframe id="top" src="/wac/top" frameborder="0"></iframe>
+    <iframe id="penalty" src="/wac/penalty" frameborder="0"></iframe>
+    <iframe id="bottom" src="/wac/bottom" frameborder="0"></iframe>
+    <!-- <iframe id="transisi" src="/wac/transisi" frameborder="0"></iframe> -->
+
+    <script src="/js/toggleDisplay.js"></script>
+</body>
+</html>

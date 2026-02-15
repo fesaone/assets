@@ -1,0 +1,439 @@
+* {
+  position: relative;
+  box-sizing: border-box;
+  line-height: 1;
+  user-select: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+:root {
+  --x: Arial, Helvetica, sans-serif;
+  --text: "LaLiga Text", var(--x);
+  --headline: "LaLiga Headline VF", var(--x);
+  --players: "LaLiga Players", var(--x);
+  --bold: "LaLiga Text Bold", var(--x);
+  --h-bold: "LaLiga Headline STD Bold", var(--x);
+  --icon: "font-laliga";
+  --primary: #005AAB;
+  --secondary: rgb(26, 40, 77);
+  --bg-logo: #003472;
+  --black: #000;
+  --black1: #020001;
+  --white: #fff;
+  --white1: #f5f5f5;
+  --white2: #DDDCE1;
+  --white3: #C5C5C5;
+}
+body {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: var(--text);
+  background-image: none;
+  background-repeat: no-repeat;
+  background-color: transparent;
+  background-size: cover;
+  background-position: top;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent !important;
+  background: transparent !important;
+}
+img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+hr {
+  width: 100%;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  border-style: solid;
+  border-color: #dddddf;
+  border-bottom: 0;
+  opacity: 1;
+}
+
+/* TOP */
+.top {
+  height: 50px;
+  width: fit-content;
+  position: absolute;
+  top: 54px;
+  left: 67px;
+  display: flex;
+}
+.top .timer {
+  min-width: 77.02px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px;
+  color: #fff;
+  background-color: #000;
+  font-size: 24px;
+  font-family: var(--h-bold);
+}
+.top .add {
+  background-color: #222;
+  display: none;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-width: fit-content;
+}
+.top img {
+  width: 50px;
+  height: 50px;
+  padding: 10px;
+  background-color: #f5f5f5;
+}
+.top .logo {
+  background-color: #0d76d5;
+}
+.top .name {
+  min-width: 100px;
+  width: fit-content;
+  height: 50px;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
+  text-transform: uppercase;
+  font-family: var(--players);
+  font-size: 24px;
+}
+.top .score {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #DDDCE1;
+  font-size: 40px;
+  font-family: var(--h-bold);
+}
+.top .tandang::before {
+  content: "";
+  width: 1px;
+  position: absolute;
+  top: 15px;
+  bottom: 15px;
+  left: -0.5px;
+  background-color: #ccc;
+}
+
+/* PK */
+.pk {
+  top: 54px;
+  left: 117px;
+  background-color: #fff;
+  min-width: fit-content;
+  text-transform: uppercase;
+}
+.title-pk {
+  display: flex;
+  white-space: nowrap;
+  background-color: #000;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -25px;
+  color: #fff;
+  padding: 6px 10px;
+  font-size: small;
+  justify-content: space-between;
+}
+.title-pk::before {
+  content: "";
+  left: -50px;
+  position: absolute;
+  background-color: #111;
+  width: 100%;
+  z-index: -1;
+  top: 0;
+  bottom: 0;
+}
+.penalty {
+  width: 100%;
+}
+.penalty .tim {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  white-space: nowrap;
+}
+.penalty .name {
+  min-width: 140px !important;
+}
+.penalty .count {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #DDDCE1;
+  font-size: 40px;
+  font-family: var(--h-bold);
+}
+.penalty .klub {
+  height: 50px;
+  gap: 20px;
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  padding: 0 20px;
+}
+.penalty .ball,
+#teamHome-balls span,
+#teamAway-balls span {
+  --bola: 16px;
+  width: var(--bola);
+  height: var(--bola);
+  background-color: #C5C5C5;
+  border-radius: 100px;
+  display: block;
+  transition: 1s ease-in-out;
+  transition-delay: 1s;
+  font-size: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#teamHome-balls span,
+#teamAway-balls span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px; /* Lebih besar untuk display */
+    height: 20px;
+    font-weight: bold;
+}
+#teamHome-balls .miss,
+#teamAway-balls .miss {
+    background-color: red;
+    color: white;
+}
+#teamHome-balls .gol,
+#teamAway-balls .gol {
+    background-color: green;
+    color: white;
+}
+
+
+/* BOTTOM */
+footer {
+  --height: 130px;
+  width: 1500px;
+  height: var(--height);
+  position: absolute;
+  bottom: 54px; /*54px*/
+  display: flex;
+  justify-content: space-between;
+  overflow: hidden;
+  border-radius: 16px 16px 0 0;
+  text-transform: uppercase;
+  transition: bottom 0.5s ease-in-out;
+}
+footer img {
+  width: var(--height);
+  height: var(--height);
+  padding: 20px;
+  background-color: #fff;
+  margin: 0;
+}
+footer .data {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+footer .title {
+  width: 100%;
+  height: 60px;
+  color: #fff;
+  background-color: rgba(17, 86, 196, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  text-transform: uppercase;
+  border-top: 6px solid;
+  font-family: var(--bold);
+}
+footer .title #event_name {
+  z-index: 9;
+}
+footer .title::before {
+  content: "";
+  height: 6px;
+  width: 100%;
+  position: absolute;
+  top: -6px;
+  background: -webkit-linear-gradient(180deg, #1155c4, #06aff2, #1155c4);
+}
+footer .title .inset {
+  position: absolute;
+  inset: 0;
+}
+:root {
+    --linear-gradient: linear-gradient(71deg, #1155c4 25%, transparent 26%, transparent 74%, #1155c4 75%);
+}
+footer .title .inset::before, footer .title .inset::after {
+  content: "";
+  background: var(--linear-gradient);
+  background-size: 1.8em 1.5em;
+  background-color: transparent;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 50%;
+  opacity: 1;
+}
+footer .title .inset::after {
+  transform: scaleX(-1);
+  left: 50%;
+  right: 0;
+}
+footer .game {
+  width: 100%;
+  height: 70px;
+  background-color: #1155c4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+footer .game .logoEvent {
+  width: 80px;
+  height: 70px;
+  background-color: #1155c4;
+  padding: 8px;
+}
+footer .game .skorGame {
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 50px;
+  color: #fff;
+  background: -webkit-linear-gradient(-90deg, #1155c4, #06aff2); /* Chrome 10-25, Safari 5.1-6 */
+  font-family: var(--bold);
+}
+footer .game .skorGame.home {
+  border-radius: 0 0 10px 0;
+}
+footer .game .skorGame.away {
+  border-radius: 0 0 0 10px;
+}
+footer .game .nameTeam {
+  flex: 1;
+  text-align: center;
+  font-weight: bold;
+  font-size: 40px;
+  font-family: var(--players);
+  letter-spacing: 1px;
+  background-color: #f4f4f4;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 510px;
+  padding: 0 20px;
+}
+footer.dua {
+  height: fit-content;
+  justify-content: center;
+  bottom: 60px; /*24px*/
+  transition: bottom 0.5s ease-in-out;
+}
+footer.dua > div {
+  color: #fff;
+  background-color: #1155c4;
+  width: 250px;
+  height: 30px;
+  border-radius: 0 0 100px 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: -1;
+}
+
+footer .stat-gol_home,
+footer .stat-gol_away {
+  font-size: 0px !important;
+  color: transparent !important;
+  transition: 0.5s ease-in-out;
+}
+
+body.dimulai footer,
+body.ht footer,
+body.ft footer {
+  bottom: 67px;
+  transition: bottom 0.5s ease-in-out;
+}
+body.dimulai footer .stat-gol_home,
+body.dimulai footer .stat-gol_away,
+body.ht footer .stat-gol_home,
+body.ht footer .stat-gol_away,
+body.ft footer .stat-gol_home,
+body.ft footer .stat-gol_away {
+  font-size: 50px !important;
+  color: #fff !important;
+  transition: 0.5s ease-in-out;
+}
+body.dimulai footer.dua,
+body.ht footer.dua,
+body.ft footer.dua {
+  bottom: 37px;
+  transition: bottom 0.5s ease-in-out;
+}
+
+/* ANIMASI */
+.top .score {
+  color: transparent;
+  max-width: 1px;
+  overflow: hidden;
+  transition: 1s ease;
+  background-color: #f5f5f5;
+  transition-delay: 5s;
+}
+body.dimulai .top .score,
+body.ft .top .score {
+  max-width: 100%;
+  color: #000;
+  background-color: #DDDCE1;
+  transition: 2s ease;
+}
+
+
+.tv {
+    min-width: 68px;
+    width: 136px;
+    max-width: 150px;
+    min-height: 68px;
+    max-height: 86px;
+    display: flex;
+    align-items: top;
+    justify-content: end;
+    position: fixed;
+    top: 54px;
+    right: 96px;
+
+    img {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+        object-position: right top;
+    }
+}

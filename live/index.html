@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OBS</title>
+    <link rel="stylesheet" href="https://assets.fesa.one/css/global.css">
+    <link rel="stylesheet" href="./config.css">
+
+    <style>
+        #matchSchedule { width: 100%; list-style-type: none; margin: 0; padding: 0; max-height: 500px; overflow-y: auto; }
+        #matchSchedule li {
+        width: 100%; display: flex; align-items: center; gap: 10px;
+        border-bottom: 1px solid var(--color-slate-900); padding: 8px 0;
+        cursor: pointer; transition: background 0.2s;
+        }
+        #matchSchedule li:hover { background-color: var(--color-slate-800); }
+        #matchSchedule li.active { background-color: var(--color-slate-900); border-color: var(--color-slate-800); }
+        
+        .no { background-color: #222; border: 1px solid #444; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 4px; }
+        .club_name { width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .skor { width: 100px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: bold; }
+        .group_stage { width: 100px; font-size: 0.8em; color: #aaa; }
+        .age_group { width: 65px; font-size: 0.8em; color: #aaa; }
+        .logo { width: 50px; height: 50px; object-fit: contain; background: transparent; }
+        .preview-box .logo { width: 80px; height: 80px; }
+
+        #disp_home_score,
+        #disp_away_score {
+            width: 30px !important;
+            max-width: fit-content !important;
+            padding: 0;
+            text-align: center;
+            border: none;
+        }
+        /* Chrome, Safari, Edge, Opera */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0; /* Ensures no extra space is left behind */
+        }
+
+        /* Firefox */
+        input[type="number"] {
+        -moz-appearance: textfield;
+        appearance: textfield; /* Standard property for future compatibility */
+        }
+
+
+        .event-header {
+            align-items: center;
+            justify-content: center;
+
+            img {
+                width: 40px;
+                height: 40px;
+            }
+        }
+        
+
+        .header-event {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+
+            img {
+                width: 40px;
+                height: 40px;
+                object-fit: contain;
+            }
+        }
+
+        /* CSS untuk Toast Notification */
+    #toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast {
+      min-width: 250px;
+      padding: 15px 20px;
+      background: #333;
+      color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      opacity: 0;
+      transform: translateX(50px);
+      transition: all 0.3s ease;
+      border-left: 4px solid #ccc;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .toast.success { border-left-color: #28a745; }
+    .toast.error { border-left-color: #dc3545; }
+    .toast.loading { border-left-color: #17a2b8; }
+    </style>
+</head>
+<body>
+    <header id="mainHeader">
+    </header>
+
+    <main id="main">
+        <section id="live-control" class="box">
+            <div class="box-header">
+                <img id="event_logo" class="logo" src="https://app.rmedia.id/fallback" alt="Event Logo">
+                <b id="event_name" style="flex: 1;">EVENT</b>
+                <div>
+                    <input type="number" id="disp_home_score" class="score-input" value="0" min="0">
+                    <input type="number" id="disp_away_score" class="score-input" value="0" min="0">
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-help-circle"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" /><path d="M12 16v.01" /><path d="M12 13a2 2 0 0 0 .914 -3.782a1.98 1.98 0 0 0 -2.414 .483" /></svg>
+            </div>
+            <div class="box-content">
+                <div class="input-timer" id="match-controls">
+                    <label for="">
+                        <div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-slate-300)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-adjustments"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 10a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M6 4v4" /><path d="M6 12v8" /><path d="M10 16a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M12 4v10" /><path d="M12 18v2" /><path d="M16 7a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M18 4v1" /><path d="M18 9v11" /></svg></div>
+                        <input type="number" id="babak" value="90" min="1">
+                        <small id="info-normal">45 menit</small>
+                        ET
+                        <input type="number" id="extra-time" value="30" min="0">
+                        <small id="info-extra">15 menit</small>
+                    </label>
+                    
+                    <button id="btnStartH1">1ST</button>
+                    <button id="btnHalfTime">HT</button>
+                    <button id="btnStartH2">2ND</button>
+                    <button id="btnFullTime">FT</button>
+                    <button id="btnStartET1">ET1</button>
+                    <button id="btnStartET2">ET2</button>
+                    <div id="btnReset">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-slate-700)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-forbid-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M9 15l6 -6" /></svg>
+                    </div>
+                    <button id="pk" onclick="toggleDisplay('penalty')">PK</button>
+                </div>
+            </div>
+            <small class="box-content" style="padding: 5px 24px; justify-content: center;">
+                <div id="match_id" style="color: yellow;">GAME</div>
+                <div id="group_stage" style="font-size: 0.9em;">GRUPA/B/C/D</div>
+                <div id="age_group" style="font-size: 0.9em;">USIA</div>
+            </small>
+            <div class="box-content aksi-klub">
+                <div class="tab tim">
+                    <img id="home_logo" src="https://app.rmedia.id/fallback">
+                    <b id="home_club_name" class="nama" autofit></b>
+                    <!-- HOME SCORE -->
+                    <button id="ctrlHomePlus" onclick="updateCounter('score', 1, 'home')">+</button>
+                    <b class="skor">
+                        <span id="header-score-home">0</span>
+                    </b>
+                    <button id="ctrlHomeMinus" onclick="updateCounter('score', -1, 'home')">-</button>
+                </div>
+                <div class="view-timer">
+                    <small class="timer" id="timer">LIVE</small>
+                    <small id="additionalTime"></small>
+                </div>
+                <div class="tab tim">
+                    <!-- AWAY SCORE -->
+                    <button id="ctrlAwayPlus" onclick="updateCounter('score', 1, 'away')">+</button>
+                    <b class="skor">
+                        <span id="header-score-away">0</span>
+                    </b>
+                    <button id="ctrlAwayMinus" onclick="updateCounter('score', -1, 'away')">-</button>
+                    <b id="away_club_name" class="nama" autofit></b>
+                    <img id="away_logo" src="https://app.rmedia.id/fallback">
+                </div>
+            </div>
+            <div id="penalty" class="box-content">
+                <div class="penalty">
+                    <div class="club">
+                        <small id="home_short_name"></small>
+                        <div id="teamHome-balls" class="balls home">
+                            <!-- Bola akan di-render otomatis -->
+                             <span>1</span>
+                             <span>2</span>
+                             <span>3</span>
+                             <span>4</span>
+                             <span>5</span>
+                        </div>
+                        <div id="teamHome-score" class="score">0</div>
+                    </div>
+                    <div class="button teamHome">
+                        <button id="btnHomeGol">Gol</button>
+                        <button id="btnHomeMiss">Miss</button>
+                        <button id="btnHomeUndo">Undo</button>
+                    </div>
+                </div>
+                <button class="text-pk" style="background-color: transparent; border: none; text-transform: uppercase;">Penalty<br>Kicks</button>
+                <div class="penalty">
+                    <div class="club">
+                        <div id="teamAway-score" class="score">0</div>
+                        <div id="teamAway-balls" class="balls away">
+                            <!-- Bola akan di-render otomatis -->
+                             <span>1</span>
+                             <span>2</span>
+                             <span>3</span>
+                             <span>4</span>
+                             <span>5</span>
+                        </div>
+                        <small id="away_short_name"></small>
+                    </div>
+                    <div class="button teamAway">
+                        <button id="btnAwayGol">Gol</button>
+                        <button id="btnAwayMiss">Miss</button>
+                        <button id="btnAwayUndo">Undo</button>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer">
+                <small onclick="toggleDisplay('scoreboard-bottom')">scoreboard-bottom</small>
+                <button id="btnSaveGoal">SIMPAN SKOR</button>
+                <small onclick="toggleDisplay('hideall')">hideall</small>
+            </div>
+        </section>
+        
+        <!-- Container untuk Notifikasi Toast -->
+        <div id="toast-container"></div>
+        <section class="box">
+            <div class="box-header">
+                <!-- HEADER EVENT BARU DI ATAS JADWAL -->
+                <div class="header-event" style="flex: 1;">
+                    <img id="list_event_logo" class="event_logo" src="https://app.rmedia.id/fallback" alt="Event Logo">
+                    <b id="list_event_name">EVENT</b>
+                </div>
+                <select id="eventList">
+                    <option value="" disabled selected>Loading Events...</option>
+                </select>
+                <button id="refreshEvents">R</button>
+            </div>
+            <div class="box-content">
+                <ul id="matchSchedule"></ul>
+            </div>
+        </section>
+
+        <div class="match-stats">
+            <!-- 1. GOL -->
+            <div class="stat-group" data-type="score">
+                <div class="stat-label">Skor Pertandingan</div>
+                <div class="stat-row">
+                    <div class="control-group">
+                        <button id="ctrlHomePlus2" class="btn-ctrl btn-plus" onclick="updateCounter('score', 1, 'home')">+</button>
+                        <button id="ctrlHomeMinus2" class="btn-ctrl btn-minus" onclick="updateCounter('score', -1, 'home')" disabled>−</button>
+                    </div>
+                    <div class="value home" id="val-score-home">0</div>
+                    <div style="text-align:center; color:#94a3b8; font-size:12px; font-weight:bold;">GOL</div>
+                    <div class="value away" id="val-score-away">0</div>
+                    <div class="control-group">
+                        <button id="ctrlAwayPlus2" class="btn-ctrl btn-plus" onclick="updateCounter('score', 1, 'away')">+</button>
+                        <button id="ctrlAwayMinus2" class="btn-ctrl btn-minus" onclick="updateCounter('score', -1, 'away')" disabled>−</button>
+                    </div>
+                </div>
+            </div>
+            <hr class="section-sep">
+            <!-- 2. PENGUASAAN BOLA (TIMER) -->
+            <div class="stat-group" data-type="possession">
+                <div class="stat-label" style="display:flex; justify-content:center; align-items:center; gap: 14px;">
+                    <span>Penguasaan Bola (Gunakan Q / W / E)</span>
+                    <span style="font-family:monospace; color:#64748b;">Total Main: <span id="match-time">00:00</span></span>
+                </div>
+                <div class="stat-row">
+                    <div class="possession-wrapper">
+                        <button id="btn-home-play" class="btn-timer btn-play-home" onclick="toggleTimer('home')">▶<span
+                            class="key-badge">Q</span></button>
+                        <div class="time-display" id="time-home">00:00</div>
+                    </div>
+                    <div class="value home" id="val-possession-home">50%</div>
+                    <div style="display:flex; flex-direction:column; align-items:center; width:100%">
+                        <div class="bar-container" style="width:100%">
+                        <div class="bar-home" id="bar-possession-home" style="width: 50%"></div>
+                        <div class="bar-away" id="bar-possession-away" style="width: 50%"></div>
+                        </div>
+                        <div style="margin-top:10px;">
+                        <button class="btn-stop" onclick="stopTimer()" title="Stop Timer (E)">⏹<span class="key-badge"
+                            style="bottom:-15px; left:50%; transform:translateX(-50%);">E</span></button>
+                        </div>
+                    </div>
+                    <div class="value away" id="val-possession-away">50%</div>
+                    <div class="possession-wrapper">
+                        <button id="btn-away-play" class="btn-timer btn-play-away" onclick="toggleTimer('away')">▶<span
+                            class="key-badge">W</span></button>
+                        <div class="time-display" id="time-away">00:00</div>
+                    </div>
+                </div>
+            </div>
+            <!-- 3. TEMBAKAN TOTAL -->
+            <div class="stat-group" data-type="shots">
+                <div class="stat-label">Tembakan Total</div>
+                <div class="stat-row">
+                    <div class="control-group">
+                        <button class="btn-ctrl btn-plus" onclick="updateCounter('shots', 1, 'home')">+</button>
+                        <button class="btn-ctrl btn-minus" onclick="updateCounter('shots', -1, 'home')" disabled>−</button>
+                    </div>
+                    <div class="value home" id="val-shots-home">0</div>
+                    <div class="bar-container">
+                        <div class="bar-home" id="bar-shots-home" style="width: 50%"></div>
+                        <div class="bar-away" id="bar-shots-away" style="width: 50%"></div>
+                    </div>
+                    <div class="value away" id="val-shots-away">0</div>
+                    <div class="control-group">
+                        <button class="btn-ctrl btn-plus" onclick="updateCounter('shots', 1, 'away')">+</button>
+                        <button class="btn-ctrl btn-minus" onclick="updateCounter('shots', -1, 'away')" disabled>−</button>
+                    </div>
+                </div>
+            </div>
+            <!-- 4. TEMBAKAN TEPAT SASARAN -->
+            <div class="stat-group" data-type="onTarget">
+                <div class="stat-label">Tembakan Tepat Sasaran</div>
+                <div class="stat-row">
+                    <div class="control-group">
+                        <button class="btn-ctrl btn-plus" onclick="updateCounter('onTarget', 1, 'home')">+</button>
+                        <button class="btn-ctrl btn-minus" onclick="updateCounter('onTarget', -1, 'home')" disabled>−</button>
+                    </div>
+                    <div class="value home" id="val-onTarget-home">0</div>
+                    <div class="bar-container">
+                        <div class="bar-home" id="bar-onTarget-home" style="width: 50%"></div>
+                        <div class="bar-away" id="bar-onTarget-away" style="width: 50%"></div>
+                    </div>
+                    <div class="value away" id="val-onTarget-away">0</div>
+                    <div class="control-group">
+                        <button class="btn-ctrl btn-plus" onclick="updateCounter('onTarget', 1, 'away')">+</button>
+                        <button class="btn-ctrl btn-minus" onclick="updateCounter('onTarget', -1, 'away')" disabled>−</button>
+                    </div>
+                </div>
+            </div>
+            <hr class="section-sep">
+            <!-- 5. CORNER -->
+            <div class="stat-group" data-type="corners">
+                <div class="stat-label">Tendangan Sudut</div>
+                <div class="stat-row">
+                    <div class="control-group">
+                        <button class="btn-ctrl btn-plus" onclick="updateCounter('corners', 1, 'home')">+</button>
+                        <button class="btn-ctrl btn-minus" onclick="updateCounter('corners', -1, 'home')" disabled>−</button>
+                    </div>
+                    <div class="value home" id="val-corners-home">0</div>
+                    <div class="bar-container">
+                        <div class="bar-home" id="bar-corners-home" style="width: 50%"></div>
+                        <div class="bar-away" id="bar-corners-away" style="width: 50%"></div>
+                    </div>
+                    <div class="value away" id="val-corners-away">0</div>
+                    <div class="control-group">
+                        <button class="btn-ctrl btn-plus" onclick="updateCounter('corners', 1, 'away')">+</button>
+                        <button class="btn-ctrl btn-minus" onclick="updateCounter('corners', -1, 'away')" disabled>−</button>
+                    </div>
+                </div>
+            </div>
+            <!-- 6. TENDANGAN BEBAS -->
+            <div class="stat-group" data-type="freekicks">
+                <div class="stat-label">Tendangan Bebas</div>
+                <div class="stat-row">
+                    <div class="control-group">
+                        <button class="btn-ctrl btn-plus" onclick="updateCounter('freekicks', 1, 'home')">+</button>
+                        <button class="btn-ctrl btn-minus" onclick="updateCounter('freekicks', -1, 'home')" disabled>−</button>
+                    </div>
+                    <div class="value home" id="val-freekicks-home">0</div>
+                    <div class="bar-container">
+                        <div class="bar-home" id="bar-freekicks-home" style="width: 50%"></div>
+                        <div class="bar-away" id="bar-freekicks-away" style="width: 50%"></div>
+                    </div>
+                    <div class="value away" id="val-freekicks-away">0</div>
+                    <div class="control-group">
+                        <button class="btn-ctrl btn-plus" onclick="updateCounter('freekicks', 1, 'away')">+</button>
+                        <button class="btn-ctrl btn-minus" onclick="updateCounter('freekicks', -1, 'away')" disabled>−</button>
+                    </div>
+                </div>
+            </div>
+            <!-- 7. PENALTI -->
+            <div class="stat-group" data-type="penalties">
+                <div class="stat-label">Penalti</div>
+                <div class="stat-row">
+                    <div class="control-group">
+                        <button class="btn-ctrl btn-plus" onclick="updateCounter('penalties', 1, 'home')">+</button>
+                        <button class="btn-ctrl btn-minus" onclick="updateCounter('penalties', -1, 'home')" disabled>−</button>
+                    </div>
+                    <div class="value home" id="val-penalties-home">0</div>
+                    <div class="bar-container">
+                        <div class="bar-home" id="bar-penalties-home" style="width: 50%"></div>
+                        <div class="bar-away" id="bar-penalties-away" style="width: 50%"></div>
+                    </div>
+                    <div class="value away" id="val-penalties-away">0</div>
+                    <div class="control-group">
+                        <button class="btn-ctrl btn-plus" onclick="updateCounter('penalties', 1, 'away')">+</button>
+                        <button class="btn-ctrl btn-minus" onclick="updateCounter('penalties', -1, 'away')" disabled>−</button>
+                    </div>
+                </div>
+            </div>
+            <hr class="section-sep">
+            <!-- 8. PELANGGARAN -->
+            <div class="stat-group" data-type="fouls">
+                <div class="stat-label">Pelanggaran</div>
+                <div class="stat-row">
+                    <div class="control-group">
+                        <button class="btn-ctrl btn-plus" onclick="updateCounter('fouls', 1, 'home')">+</button>
+                        <button class="btn-ctrl btn-minus" onclick="updateCounter('fouls', -1, 'home')" disabled>−</button>
+                    </div>
+                    <div class="value home" id="val-fouls-home">0</div>
+                    <div class="bar-container">
+                        <div class="bar-home" id="bar-fouls-home" style="width: 50%"></div>
+                        <div class="bar-away" id="bar-fouls-away" style="width: 50%"></div>
+                    </div>
+                    <div class="value away" id="val-fouls-away">0</div>
+                    <div class="control-group">
+                        <button class="btn-ctrl btn-plus" onclick="updateCounter('fouls', 1, 'away')">+</button>
+                        <button class="btn-ctrl btn-minus" onclick="updateCounter('fouls', -1, 'away')" disabled>−</button>
+                    </div>
+                </div>
+            </div>
+            <!-- 9. KARTU KUNING -->
+            <div class="stat-group" data-type="yellows">
+                <div class="stat-label">Kartu Kuning</div>
+                <div class="stat-row">
+                    <div class="control-group">
+                        <button class="btn-ctrl btn-plus" onclick="updateCounter('yellows', 1, 'home')">+</button>
+                        <button class="btn-ctrl btn-minus" onclick="updateCounter('yellows', -1, 'home')" disabled>−</button>
+                    </div>
+                    <div class="value home" id="val-yellows-home">0</div>
+                    <div class="bar-container">
+                        <div class="bar-home" id="bar-yellows-home" style="width: 50%"></div>
+                        <div class="bar-away" id="bar-yellows-away" style="width: 50%"></div>
+                    </div>
+                    <div class="value away" id="val-yellows-away">0</div>
+                    <div class="control-group">
+                        <button class="btn-ctrl btn-plus" onclick="updateCounter('yellows', 1, 'away')">+</button>
+                        <button class="btn-ctrl btn-minus" onclick="updateCounter('yellows', -1, 'away')" disabled>−</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 10. KARTU MERAH -->
+            <div class="stat-group" data-type="reds">
+                <div class="stat-label">Kartu Merah</div>
+                <div class="stat-row">
+                    <div class="control-group">
+                        <button class="btn-ctrl btn-plus" onclick="updateCounter('reds', 1, 'home')">+</button>
+                        <button class="btn-ctrl btn-minus" onclick="updateCounter('reds', -1, 'home')" disabled>−</button>
+                    </div>
+                    <div class="value home" id="val-reds-home">0</div>
+                    <div class="bar-container">
+                        <div class="bar-home" id="bar-reds-home" style="width: 50%"></div>
+                        <div class="bar-away" id="bar-reds-away" style="width: 50%"></div>
+                    </div>
+                    <div class="value away" id="val-reds-away">0</div>
+                    <div class="control-group">
+                        <button class="btn-ctrl btn-plus" onclick="updateCounter('reds', 1, 'away')">+</button>
+                        <button class="btn-ctrl btn-minus" onclick="updateCounter('reds', -1, 'away')" disabled>−</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 11. OFFSIDE -->
+            <div class="stat-group" data-type="offsides">
+                <div class="stat-label">Offside</div>
+                <div class="stat-row">
+                    <div class="control-group">
+                        <button class="btn-ctrl btn-plus" onclick="updateCounter('offsides', 1, 'home')">+</button>
+                        <button class="btn-ctrl btn-minus" onclick="updateCounter('offsides', -1, 'home')" disabled>−</button>
+                    </div>
+                    <div class="value home" id="val-offsides-home">0</div>
+                    <div class="bar-container">
+                        <div class="bar-home" id="bar-offsides-home" style="width: 50%"></div>
+                        <div class="bar-away" id="bar-offsides-away" style="width: 50%"></div>
+                    </div>
+                    <div class="value away" id="val-offsides-away">0</div>
+                    <div class="control-group">
+                        <button class="btn-ctrl btn-plus" onclick="updateCounter('offsides', 1, 'away')">+</button>
+                        <button class="btn-ctrl btn-minus" onclick="updateCounter('offsides', -1, 'away')" disabled>−</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    <style>
+        footer {
+            width: 100%;
+            background-color: #000;
+            position: fixed;
+            bottom: 0;
+            height: 25px;
+            font-size: smaller;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        #browser-indicator {
+            display: flex;
+            align-items: center;
+            height: 25px;
+            gap: 10px;
+        }
+        #browser-indicator svg {
+            width: 20px;
+            padding: 2px;
+            color: #fff;
+        }
+        #browser-indicator.active {
+            background: var(--color-lime-950);
+            padding-right: 10px;
+            color: lime;
+
+            svg {
+                background-color: lime;
+            }
+            .mobiledata-off {
+                display: none;
+            }
+            &:after {
+                content: 'Active';
+            }
+        }
+        #browser-indicator.inactive {
+            background: var(--color-red-950);
+            padding-right: 10px;
+            color: red;
+            box-shadow: none;
+
+            svg {
+                background-color: red;
+            }
+            .mobiledata {
+                display: none;
+            }
+            .mobiledata-off {
+                display: block;
+            }
+            &:after {
+                content: 'Not active';
+            }
+        }
+        #clearAll {
+            margin-right: 100px;
+        }
+    </style>
+    <footer>
+        <div id="browser-indicator" aria-live="polite">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mobiledata"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M16 12v-8" /><path d="M8 20v-8" /><path d="M13 7l3 -3l3 3" /><path d="M5 17l3 3l3 -3" /></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mobiledata-off"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M16 12v-8" /><path d="M8 20v-8" /><path d="M13 7l3 -3l3 3" /><path d="M5 17l3 3l3 -3" /><path d="M3 3l18 18" /></svg>
+        </div>
+        <div class="data-footer">
+            <span class="status-badge" id="dbStatus">Menghubungkan Database...</span>
+            <button id="clearAll">Reset Aplikasi</button>
+        </div>
+    </footer>
+
+    <script src="https://assets.fesa.one/js/autofit.js"></script>
+    <script type="module" src="/js/timer-config.js"></script>
+    <script src="/js/stats-config.js"></script>
+    <script type="module" src="/js/penalty-config.js"></script>
+    <script src="/js/toggleDisplay.js"></script>
+    <script type="module" src="/js/match-config.js"></script>
+
+<script>
+    // function triggerButton(side, type) {
+    //     const selector = `.btn-ctrl.btn-${type}[onclick*="'${side}'"]`;
+    //     const btn = document.querySelector(selector);
+
+    //     if (!btn || btn.disabled) return;
+    //     btn.click();
+    // }
+
+    // // mapping tombol baru → tombol lama
+    // document.getElementById('ctrlHomePlus').onclick  = () => triggerButton('home', 'plus');
+    // document.getElementById('ctrlHomeMinus').onclick = () => triggerButton('home', 'minus');
+
+    // document.getElementById('ctrlAwayPlus').onclick  = () => triggerButton('away', 'plus');
+    // document.getElementById('ctrlAwayMinus').onclick = () => triggerButton('away', 'minus');
+</script>
+
+<script>
+(() => {
+    const indicator = document.getElementById('browser-indicator');
+
+    function updateStatus() {
+        const isActive =
+            document.visibilityState === 'visible' &&
+            document.hasFocus();
+
+        indicator.classList.toggle('active', isActive);
+        indicator.classList.toggle('inactive', !isActive);
+    }
+    document.addEventListener('visibilitychange', updateStatus);
+    window.addEventListener('focus', updateStatus);
+    window.addEventListener('blur', updateStatus);
+
+    updateStatus();
+})();
+</script>
+
+<script src="/js/reset-config.js"></script>
+<script>
+    (function () {
+    const el = document.createElement('div');
+    el.id = 'viewport-indicator';
+
+    Object.assign(el.style, {
+        position: 'fixed',
+        bottom: '0',
+        right: '0',
+        height: '25px',
+        zIndex: '99999',
+        display: 'flex',        
+        alignItems: 'center',
+        padding: '0 10px 0 0',
+        fontSize: 'smaller',
+        fontFamily: 'var(--font-mono)',
+        pointerEvents: 'none'
+    });
+
+    function update() {
+        el.textContent = window.innerWidth + ' × ' + window.innerHeight;
+    }
+
+    update();
+    window.addEventListener('resize', update);
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.body.appendChild(el);
+    });
+})();
+</script>
+
+
+<script>
+// keyboard event controller
+class KeyboardController {
+  constructor() {
+    this.init();
+  }
+
+  init() {
+    window.addEventListener('keydown', this.handle.bind(this));
+  }
+
+  isTypingContext(target) {
+    const tag = target?.tagName?.toLowerCase();
+    return tag === 'input' || tag === 'textarea' || target?.isContentEditable;
+  }
+
+  handle(event) {
+    if (this.isTypingContext(event.target)) return;
+
+    if (event.key === '=') {
+      toggleDisplay?.('scoreboard-bottom');
+    }
+
+    if (event.key === '-') {
+      toggleDisplay?.('hideall');
+    }
+  }
+}
+new KeyboardController();
+</script>
+</body>
+</html>
