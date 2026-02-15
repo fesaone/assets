@@ -110,6 +110,7 @@ hr {
   text-transform: uppercase;
   font-family: var(--players);
   font-size: 24px;
+  white-space: nowrap;
 }
 .top .score {
   width: 50px;
@@ -415,5 +416,6 @@ body.ft .top .score {
   background-color: #DDDCE1;
   transition: 2s ease;
 }
+
 
 
