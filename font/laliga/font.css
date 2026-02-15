@@ -1,0 +1,51 @@
+/* Import fonts */
+@font-face {
+  font-family: 'LaLiga Headline VF';
+  src:  url('./LALIGAHeadlineVF.woff'), url('./LALIGAHeadlineVF.woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'LaLiga Headline STD Bold';
+  src:  url('./LALIGAHeadline-StdBold.woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'LaLiga Players';
+  src:  url('./LALIGAPlayers-Regular.woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'LaLiga Text';
+  src:  url('./LALIGAText-Regular.woff');
+  src: url('./LALIGAText-Regular.woff2'), url('./LALIGAText-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'LaLiga Text Bold';
+  src:  url('./LALIGAText-Bold.woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'font-laliga';
+  src:  url('./font-laliga.eot');
+  src:  url('./font-laliga.eot#iefix') format('embedded-opentype'),
+    url('./font-laliga.woff2') format('woff2'),
+    url('./font-laliga.ttf') format('truetype'),
+    url('./font-laliga.woff') format('woff'),
+    url('./font-laliga.svg#font-laliga') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
